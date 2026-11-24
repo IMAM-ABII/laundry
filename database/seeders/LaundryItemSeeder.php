@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\LaundryItem;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 
 class LaundryItemSeeder extends Seeder
 {
@@ -12,52 +12,33 @@ class LaundryItemSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('laundry_items')->insert([
+        foreach ([
             [
-                'name' => 'Cuci Baju Reguler',
-                'category' => 'Cuci',
-                'price' => 25000,
-                'description' => 'Layanan cuci baju reguler.',
-                'image' => null,
-                'created_at' => now(),
-                'updated_at' => now(),
+                'name' => 'Reguler',
+                'price' => 7000,
+                'processing_time' => '3-4 hari',
+                'description' => 'Layanan laundry reguler dengan estimasi selesai 3-4 hari.',
             ],
             [
-                'name' => 'Cuci Baju Ekspres',
-                'category' => 'Cuci',
-                'price' => 28000,
-                'description' => 'Layanan cuci baju ekspres.',
-                'image' => null,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'name' => 'Setrika Baju Reguler',
-                'category' => 'Setrika',
-                'price' => 5000,
-                'description' => 'Layanan setrika baju reguler.',
-                'image' => null,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'name' => 'Setrika Baju Ekspres',
-                'category' => 'Setrika',
-                'price' => 15000,
-                'description' => 'Layanan setrika baju ekspres.',
-                'image' => null,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'name' => 'Paket Cuci dan Setrika',
-                'category' => 'Paket',
+                'name' => 'Ekspres',
                 'price' => 12000,
-                'description' => 'Paket layanan cuci dan setrika baju.',
-                'image' => null,
-                'created_at' => now(),
-                'updated_at' => now(),
+                'processing_time' => '1-2 hari',
+                'description' => 'Layanan laundry ekspres dengan estimasi selesai 1-2 hari.',
             ],
-        ]);
+            [
+                'name' => 'Superkilat',
+                'price' => 25000,
+                'processing_time' => '5 jam',
+                'description' => 'Layanan laundry superkilat dengan estimasi selesai 5 jam.',
+            ],
+        ] as $service) {
+            LaundryItem::updateOrCreate(
+                ['name' => $service['name']],
+                [
+                    ...$service,
+                    'category' => 'Cuci',
+                ],
+            );
+        }
     }
 }

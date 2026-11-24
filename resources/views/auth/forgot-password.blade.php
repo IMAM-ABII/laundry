@@ -1,5 +1,10 @@
 <x-guest-layout>
-    <div class="mb-4 text-sm text-gray-600">
+    <div class="mb-6">
+        <p class="text-sm font-semibold uppercase tracking-[0.16em] text-indigo-600">Laundrymam</p>
+        <h1 class="mt-2 text-2xl font-bold tracking-tight text-slate-800">{{ __('Reset your password') }}</h1>
+    </div>
+
+    <div class="mb-5 rounded-xl bg-slate-50 p-4 text-sm leading-6 text-slate-600">
         {{ __('Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.') }}
     </div>
 

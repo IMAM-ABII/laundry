@@ -76,6 +76,7 @@ class LaundryItemController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'category' => ['required', 'in:Cuci,Setrika,Paket'],
             'price' => ['required', 'integer', 'min:0'],
+            'processing_time' => ['required', 'string', 'max:100'],
             'description' => ['required', 'string'],
             'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg', 'max:2048'],
         ];

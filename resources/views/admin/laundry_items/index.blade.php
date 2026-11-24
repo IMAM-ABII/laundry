@@ -1,61 +1,75 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex items-center justify-between gap-4">
-            <h2 class="text-xl font-semibold leading-tight text-gray-800">Master Data Layanan</h2>
-            <a href="{{ route('laundry_items.create') }}" class="rounded bg-blue-600 px-4 py-2 font-semibold text-white hover:bg-blue-700">
+            <h2 class="text-xl font-bold leading-tight text-slate-800">Master Data Layanan</h2>
+            <a href="{{ route('laundry_items.create') }}" class="rounded-lg bg-indigo-600 px-4 py-2.5 font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-indigo-700 hover:shadow-md">
                 + Tambah Layanan
             </a>
         </div>
     </x-slot>
 
     <div class="py-10">
-        <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
+        <div class="mx-auto max-w-7xl space-y-5 px-4 sm:px-6 lg:px-8">
             @if(session('success'))
-                <div class="mb-4 rounded border border-green-400 bg-green-100 p-3 text-green-700">{{ session('success') }}</div>
+                <div class="rounded-xl border border-green-200 bg-green-50 p-4 font-medium text-green-700 shadow-sm">{{ session('success') }}</div>
             @endif
 
-            <div class="overflow-x-auto rounded-lg border bg-white shadow-sm">
-                <table class="w-full">
-                    <thead>
-                        <tr class="border-b bg-gray-100 text-left text-sm text-gray-600">
-                            <th class="p-3">Gambar</th>
-                            <th class="p-3">Nama</th>
-                            <th class="p-3">Kategori</th>
-                            <th class="p-3">Harga</th>
-                            <th class="p-3">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($laundry_items as $laundryItem)
-                            <tr class="border-b text-sm">
-                                <td class="p-3">
-                                    @if($laundryItem->image)
-                                        <img src="{{ asset('storage/'.$laundryItem->image) }}" alt="{{ $laundryItem->name }}" class="mx-auto h-16 w-16 rounded object-cover">
-                                    @else
-                                        <span class="text-xs text-gray-400">Tanpa gambar</span>
-                                    @endif
-                                </td>
-                                <td class="p-3 font-semibold">{{ $laundryItem->name }}</td>
-                                <td class="p-3">{{ $laundryItem->category }}</td>
-                                <td class="p-3 font-bold text-green-600">Rp {{ number_format($laundryItem->price, 0, ',', '.') }}</td>
-                                <td class="whitespace-nowrap p-3">
-                                    <a href="{{ route('laundry_items.edit', $laundryItem) }}" class="mr-3 font-semibold text-blue-600 hover:underline">Edit</a>
-                                    <form action="{{ route('laundry_items.destroy', $laundryItem) }}" method="POST" class="inline" onsubmit="return confirm('Yakin hapus layanan ini?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="font-semibold text-red-600 hover:underline">Hapus</button>
-                                    </form>
-                                </td>
+            <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-lg shadow-slate-200/50">
+                <div class="overflow-x-auto">
+                    <table class="w-full min-w-[760px]">
+                        <thead>
+                            <tr class="border-b border-slate-200 bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500">
+                                <th class="px-5 py-4">Gambar</th>
+                                <th class="px-5 py-4">Nama</th>
+                                <th class="px-5 py-4">Kategori</th>
+                                <th class="px-5 py-4">Harga/kg</th>
+                                <th class="px-5 py-4">Estimasi</th>
+                                <th class="px-5 py-4">Aksi</th>
                             </tr>
-                        @empty
-                            <tr>
-                                <td colspan="5" class="p-6 text-center text-gray-500">Belum ada layanan.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            @forelse($laundry_items as $laundryItem)
+                                <tr class="text-sm transition-colors hover:bg-indigo-50/40">
+                                    <td class="px-5 py-4">
+                                        @if($laundryItem->image)
+                                            <img src="{{ asset('storage/'.$laundryItem->image) }}" alt="{{ $laundryItem->name }}" class="mx-auto h-16 w-16 rounded-xl object-cover shadow-sm ring-1 ring-slate-200">
+                                        @else
+                                            <span class="flex h-16 w-16 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-100 to-sky-100 text-[10px] font-semibold text-indigo-500">Laundry</span>
+                                        @endif
+                                    </td>
+                                    <td class="px-5 py-4 font-semibold text-slate-800">{{ $laundryItem->name }}</td>
+                                    <td class="px-5 py-4">
+                                        <span class="rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-700">{{ $laundryItem->category }}</span>
+                                    </td>
+                                    <td class="whitespace-nowrap px-5 py-4 font-bold text-green-700">Rp {{ number_format($laundryItem->price, 0, ',', '.') }}/kg</td>
+                                    <td class="whitespace-nowrap px-5 py-4 text-slate-600">{{ $laundryItem->processing_time ?? '—' }}</td>
+                                    <td class="whitespace-nowrap px-5 py-4">
+                                        <div class="flex items-center gap-2">
+                                            <a href="{{ route('laundry_items.edit', $laundryItem) }}" class="rounded-lg border border-indigo-100 bg-indigo-50 px-3 py-1.5 font-semibold text-indigo-700 transition hover:border-indigo-200 hover:bg-indigo-100">Edit</a>
+                                            <form action="{{ route('laundry_items.destroy', $laundryItem) }}" method="POST" class="inline" onsubmit="return confirm('Yakin hapus layanan ini?')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="rounded-lg border border-red-100 bg-red-50 px-3 py-1.5 font-semibold text-red-600 transition hover:border-red-200 hover:bg-red-100">Hapus</button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="6" class="px-5 py-12 text-center">
+                                        <div class="mx-auto flex max-w-sm flex-col items-center gap-2 text-slate-500">
+                                            <span class="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 text-xl text-slate-400">—</span>
+                                            <span class="font-semibold text-slate-700">Belum ada layanan</span>
+                                            <span class="text-sm">Tambahkan layanan pertama untuk mulai menerima pesanan.</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            <div class="mt-4">{{ $laundry_items->links() }}</div>
+            <div>{{ $laundry_items->links() }}</div>
         </div>
     </div>
 </x-app-layout>

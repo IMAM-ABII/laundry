@@ -23,7 +23,7 @@ class OrderController extends Controller
     {
         $validated = $request->validate([
             'customer_name' => ['required', 'string', 'max:255'],
-            'queue_number' => ['required', 'string', 'max:20'],
+            'customer_phone' => ['required', 'string', 'max:20'],
             'items' => ['required', 'array'],
             'items.*' => ['nullable', 'integer', 'min:0'],
         ]);
@@ -42,9 +42,10 @@ class OrderController extends Controller
         DB::transaction(function () use ($validated, $orderedItems): void {
             $order = Order::create([
                 'customer_name' => $validated['customer_name'],
-                'queue_number' => $validated['queue_number'],
+                'customer_phone' => $validated['customer_phone'],
+                'queue_number' => '0',
                 'total_price' => 0,
-                'status' => 'pending',
+                'status' => 'processing',
             ]);
 
             $totalPrice = 0;
@@ -63,6 +64,9 @@ class OrderController extends Controller
             }
 
             $order->update(['total_price' => $totalPrice]);
+            $order->update([
+                'queue_number' => str_pad((string) $order->id, 3, '0', STR_PAD_LEFT),
+            ]);
         });
 
         return redirect()->route('customer.index')
@@ -75,19 +79,33 @@ class OrderController extends Controller
             ->with('orderDetails.laundryItem')
             ->latest()
             ->get();
+        $summary = [
+            'total_transactions' => $orders->count(),
+            'total_revenue' => $orders->where('status', 'completed')->sum('total_price'),
+            'processing_transactions' => $orders->whereIn('status', ['pending', 'processing'])->count(),
+            'completed_transactions' => $orders->where('status', 'completed')->count(),
+            'cancelled_transactions' => $orders->where('status', 'cancelled')->count(),
+        ];
 
-        return view('dashboard', compact('orders'));
+        return view('dashboard', compact('orders', 'summary'));
     }
 
     public function updateStatus(Request $request, int $id)
     {
         $validated = $request->validate([
-            'status' => ['required', Rule::in(['pending', 'completed', 'cancelled'])],
+            'status' => ['required', Rule::in(['processing', 'completed', 'cancelled'])],
         ]);
 
         $order = Order::query()->findOrFail($id);
         $order->update(['status' => $validated['status']]);
 
         return back()->with('success', 'Status pesanan #'.$order->id.' berhasil diperbarui!');
+    }
+
+    public function destroy(Order $order)
+    {
+        $order->delete();
+
+        return back()->with('success', 'Pesanan #'.$order->id.' berhasil dihapus!');
     }
 }
